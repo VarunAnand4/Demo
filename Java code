@@ -1,88 +1,84 @@
-package bankATM;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
-public class AccountHolder {
-
+public class AccountHolder{
+    public static double annualInterestRate = 0.04;
     private double balance;
-    private static double annualInterestRate;
-
-    // Constructor
-    public AccountHolder(double initialBalance) {
-        if (initialBalance < 0) {
-            System.out.println("Balance cannot be negative.");
-        } else {
-            this.balance = initialBalance;
+    public AccountHolder(double initialBalance){
+        if (initialBalance<0){
+            throw new IllegalArgumentException("Initial balance must be non-negative.");
+        }
+        this.balance=initialBalance;
+    }
+    public void deposit(double amount){
+        if (amount>0){
+            this.balance+=amount;
+        }else{
+            System.out.println("Deposit amount must be positive.");
         }
     }
-
-    // Deposit method
-    public void deposit(double amount) {
-        if (amount < 0) {
-            System.out.println("Deposit amount cannot be negative.");
+    public void withdrawal(double amount){
+        if (amount>0) {
+            if(this.balance-amount>=50){
+                this.balance-=amount;
+            } else {
+                System.out.println("Withdrawal would reduce balance below $50. Operation cancelled.");
+            }
         } else {
-            balance += amount;
+            System.out.println("Withdrawal amount must be positive.");
         }
     }
-
-    // Withdrawal method
-    public void withdraw(double amount) {
-        if (balance - amount < 50) {
-            System.out.println("Cannot withdraw $" + amount + " as minimum balance of $50 must be maintained.");
-        } else {
-            balance -= amount;
-        }
+    public void monthlyInterest() {
+        this.balance += this.balance * (annualInterestRate / 12.0);
     }
-
-    // Apply monthly interest
-    public void applyMonthlyInterest() {
-        balance += balance * (annualInterestRate / 12.0);
-    }
-
-    // Getter for balance
     public double getBalance() {
-        return balance;
+        return this.balance;
     }
-
-    // Setter for interest rate
-    public static void setAnnualInterestRate(double rate) {
-        annualInterestRate = rate;
-    }
-} package bankATM;
-
+}
+****************************************************************************************************************************************************
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Scanner;
 
 public class AccountHolderTest {
 
     public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        AccountHolder.annualInterestRate = 0.04;
+        System.out.printf("Enter the initial balance for the account\n");
+        double initialBalance=s.nextDouble();
+        while(initialBalance<0){
+            System.out.println("Balance cannot be negative. Please enter a valid initial balance");
+            initialBalance=s.nextDouble();
+        }
 
-        // Initialize Scanner for user input
-        Scanner scanner = new Scanner(System.in);
-        double startingBalance;
-
-        // Set interest rate
-        AccountHolder.setAnnualInterestRate(0.04);
-
-        // Get initial balance from the user
-        System.out.print("Please enter the initial balance: ");
-        startingBalance = scanner.nextDouble();
-
-        // Create a new AccountHolder object
-        AccountHolder account = new AccountHolder(startingBalance);
-
-        // Deposit operation
-        System.out.print("Enter the amount to deposit: ");
-        double depositAmount = scanner.nextDouble();
+        AccountHolder account=new AccountHolder(initialBalance);
+        System.out.println("Enter the deposit amount");
+        double depositAmount=s.nextDouble();
         account.deposit(depositAmount);
+        System.out.println("Enter the withdrawal amount");
+        double withdrawalAmount=s.nextDouble();
+        account.withdrawal(withdrawalAmount);
+        account.monthlyInterest();
 
-        // Withdrawal operation
-        System.out.print("Enter the amount to withdraw: ");
-        double withdrawAmount = scanner.nextDouble();
-        account.withdraw(withdrawAmount);
+        System.out.printf("Ending balance, including interest: $%.2f%n", account.getBalance());
+        
+        System.out.println("Monthly balances for one year at .04");
+        System.out.println("Balances: ");
+        System.out.println("Account Balance w. Interest");
+        System.out.printf("Base     \t$%.2f%n",account.getBalance());
 
-        // Apply monthly interest
-        account.applyMonthlyInterest();
-        System.out.printf("Final balance after applying interest: $%.2f\n", account.getBalance());
-
-        // Close the scanner
-        scanner.close();
+        double balance=account.getBalance();
+        for (int month=1;month<=12;month++){
+            balance+=balance*(AccountHolder.annualInterestRate/12.0);
+            System.out.printf("Month %d:\t$%.2f%n",month,balance);
+        }
+        displayProgramDetails();
+        s.close();
+    }
+    private static void displayProgramDetails() {
+        String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime());
+        System.out.println("Cur dt=" + timeStamp);
+        System.out.println("Programmed by Sridevi CJ Student");
     }
 }
