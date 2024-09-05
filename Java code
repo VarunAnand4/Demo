@@ -1,0 +1,88 @@
+package bankATM;
+
+public class AccountHolder {
+
+    private double balance;
+    private static double annualInterestRate;
+
+    // Constructor
+    public AccountHolder(double initialBalance) {
+        if (initialBalance < 0) {
+            System.out.println("Balance cannot be negative.");
+        } else {
+            this.balance = initialBalance;
+        }
+    }
+
+    // Deposit method
+    public void deposit(double amount) {
+        if (amount < 0) {
+            System.out.println("Deposit amount cannot be negative.");
+        } else {
+            balance += amount;
+        }
+    }
+
+    // Withdrawal method
+    public void withdraw(double amount) {
+        if (balance - amount < 50) {
+            System.out.println("Cannot withdraw $" + amount + " as minimum balance of $50 must be maintained.");
+        } else {
+            balance -= amount;
+        }
+    }
+
+    // Apply monthly interest
+    public void applyMonthlyInterest() {
+        balance += balance * (annualInterestRate / 12.0);
+    }
+
+    // Getter for balance
+    public double getBalance() {
+        return balance;
+    }
+
+    // Setter for interest rate
+    public static void setAnnualInterestRate(double rate) {
+        annualInterestRate = rate;
+    }
+} package bankATM;
+
+import java.util.Scanner;
+
+public class AccountHolderTest {
+
+    public static void main(String[] args) {
+
+        // Initialize Scanner for user input
+        Scanner scanner = new Scanner(System.in);
+        double startingBalance;
+
+        // Set interest rate
+        AccountHolder.setAnnualInterestRate(0.04);
+
+        // Get initial balance from the user
+        System.out.print("Please enter the initial balance: ");
+        startingBalance = scanner.nextDouble();
+
+        // Create a new AccountHolder object
+        AccountHolder account = new AccountHolder(startingBalance);
+
+        // Deposit operation
+        System.out.print("Enter the amount to deposit: ");
+        double depositAmount = scanner.nextDouble();
+        account.deposit(depositAmount);
+
+        // Withdrawal operation
+        System.out.print("Enter the amount to withdraw: ");
+        double withdrawAmount = scanner.nextDouble();
+        account.withdraw(withdrawAmount);
+
+        // Apply monthly interest
+        account.applyMonthlyInterest();
+        System.out.printf("Final balance after applying interest: $%.2f\n", account.getBalance());
+
+        // Close the scanner
+        scanner.close();
+    }
+}
